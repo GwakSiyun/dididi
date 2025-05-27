@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게시판</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: 'Pretendard', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #fefaf6;
+        color: #333;
+        position: relative;
+        line-height: 1.6;
+      }
+
+      h1 {
+        text-align: center;
+        color: #34495e;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        font-weight: 700;
+      }
+
+      .category-bar {
+        text-align: center;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .category-bar button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        background-color: #a3bffa;
+        color: #fff;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .category-bar button:hover {
+        background-color: #7f9cf5;
+        transform: scale(1.05);
+      }
+
+      .post-form,
+      .post-list,
+      .post-detail {
+        max-width: 700px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        transition: transform 0.2s ease;
+      }
+
+      .post {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+      }
+
+      .post:hover {
+        transform: scale(1.02);
+        border-color: #a3bffa;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .post-title {
+        font-weight: 600;
+        font-size: 1.3em;
+        color: #34495e;
+        margin-bottom: 5px;
+      }
+
+      .post-author,
+      .post-time {
+        font-size: 0.9em;
+        color: #666;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: 600;
+        color: #34495e;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        color: #333;
+        font-size: 1em;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #a3bffa;
+        box-shadow: 0 0 6px rgba(163, 191, 250, 0.3);
+        outline: none;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .button-row {
+        margin-top: 20px;
+        text-align: right;
+      }
+
+      .button-row button,
+      .fab-button,
+      .delete-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .button-row button {
+        background-color: #ff9aa2;
+        color: #fff;
+      }
+
+      .button-row button:hover {
+        background-color: #ff6b6b;
+        transform: scale(1.05);
+      }
+
+      .fab-button {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background-color: #a3bffa;
+        color: #fff;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .fab-button:hover {
+        background-color: #7f9cf5;
+        transform: scale(1.1);
+      }
+
+      .delete-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: #ffb3ba;
+        color: #fff;
+        padding: 8px 16px;
+      }
+
+      .delete-button:hover {
+        background-color: #ff6b6b;
+        transform: scale(1.05);
+      }
+
+      /* 반응형 디자인 */
+      @media (max-width: 600px) {
+        .post-form,
+        .post-list,
+        .post-detail {
+          padding: 15px;
+          margin: 10px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .category-bar {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .category-bar button {
+          padding: 8px 15px;
+          font-size: 0.95em;
+        }
+
+        .fab-button {
+          width: 45px;
+          height: 45px;
+          font-size: 1.3em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1><i class="fas fa-bulletin-board"></i> 게시판</h1>
+
+    <div class="category-bar">
+      <!-- 카테고리 버튼을 포함하는 컨테이너. CSS의 flex로 버튼을 수평/모바일에서 수직 정렬. -->
+      <button onclick="filterCategory('강민수')">강민수</button>
+      <!-- "강민수" 카테고리 버튼. 클릭 시 JavaScript의 filterCategory 함수 호출. 인자로 '강민수' 전달. -->
+      <button onclick="filterCategory('정명애')">정명애</button>
+      <!-- "정명애" 카테고리 버튼. 동일한 방식으로 동작. -->
+      <button onclick="filterCategory('박주용')">박주용</button>
+      <!-- "박주용" 카테고리 버튼. -->
+    </div>
+
+    <div class="post-form hidden" id="postForm">
+      <!-- 게시물 작성 폼 컨테이너. hidden 클래스로 기본 숨김. id="postForm"은 JavaScript에서 참조. -->
+      <label>글 제목: <input id="titleInput" type="text" /></label>
+      <!-- 제목 입력 필드. label은 접근성(스크린 리더)과 사용자 경험 개선. id="titleInput"은 데이터 참조용. -->
+      <label>글쓴이: <input id="authorInput" type="text" /></label>
+      <!-- 글쓴이 입력 필드. 동일 구조. -->
+      <label
+        >카테고리:
+        <!-- 카테고리 선택 드롭다운. -->
+        <select id="categoryInput">
+          <!-- 드롭다운 메뉴. id="categoryInput"으로 선택값 참조. -->
+          <option value="강민수">강민수</option>
+          <!-- 기본 선택지. value는 JavaScript에서 사용. -->
+          <option value="정명애">정명애</option>
+          <option value="박주용">박주용</option>
+        </select>
+      </label>
+      <label>글 내용: <textarea id="contentInput" rows="5"></textarea></label>
+      <!-- 내용 입력. textarea는 다중 줄 입력 허용. rows="5"는 5줄 높이. -->
+      <div class="button-row">
+        <!-- 버튼을 오른쪽 정렬하는 컨테이너. textarea-> 긴 텍스트 입력에 적합-->
+        <button onclick="submitPost()">
+          <i class="fas fa-check"></i> 완료
+        </button>
+        <!-- 제출 버튼. submitPost 함수 호출. 체크 아이콘 추가. -->
+      </div>
+    </div>
+
+    <div class="post-list" id="postList"></div>
+    <!--게시물 목록 컨테이너-->
+
+    <div class="post-detail hidden" id="postDetail">
+      <!-- 상세 페이지 컨테이너. hidden 클래스로 기본 숨김. id="postDetail"로 참조. -->
+      <button class="delete-button" onclick="deletePost()">
+        <i class="fas fa-trash"></i> 삭제
+      </button>
+      <!-- 삭제 버튼. deletePost 함수 호출. 쓰레기통 아이콘. -->
+      <p><strong>제목:</strong> <span id="detailTitle"></span></p>
+      <!-- 제목 표시. span에 JavaScript로 데이터 삽입. -->
+      <p><strong>글쓴이:</strong> <span id="detailAuthor"></span></p>
+      <!-- 글쓴이 표시. -->
+      <p><strong>작성 시간:</strong> <span id="detailTime"></span></p>
+      <!-- 작성 시간 표시. -->
+      <p><strong>카테고리:</strong> <span id="detailCategory"></span></p>
+      <!-- 카테고리 표시. -->
+      <p><strong>내용:</strong></p>
+      <!-- 내용 레이블. -->
+      <p id="detailContent"></p>
+      <!-- 내용 표시. -->
+      <div class="button-row">
+        <!-- 버튼 컨테이너. -->
+        <button onclick="goBack()">
+          <i class="fas fa-arrow-left"></i> 뒤로가기
+        </button>
+        <!-- 뒤로가기 버튼. goBack 함수 호출. 화살표 아이콘. -->
+      </div>
+    </div>
+
+    <button class="fab-button" onclick="togglePostForm()">
+      <!-- FAB 버튼. togglePostForm 함수 호출. 펜 아이콘. 작성 폼 토글하는 고정버튼. 오른쪽 하단에 위치-->
+      <i class="fas fa-pen"></i>
+    </button>
+
+    <script>
+      const posts = []; // 게시물 데이터를 저장하는 배열. 객체 {title, author, category, content, timestamp}로 구성. 전역 변수로 상태 관리.
+      //posts는 클라이언트 측 데이터 저장소 역할. 서버 없이 메모리에 저장.
+      let currentFilter = null; // 현재 선택된 카테고리 필터. null이면 모든 게시물 표시.
+      let formOpen = false; // 작성 폼의 표시 상태. false면 숨김.
+      let currentDetailIndex = null; // 현재 상세 페이지의 게시물 인덱스.
+
+      function submitPost() {
+        // 게시물 제출 처리.
+        const title = document.getElementById('titleInput').value; // 제목 입력값.
+        const author = document.getElementById('authorInput').value; // 글쓴이 입력값.
+        const category = document.getElementById('categoryInput').value; // 카테고리 선택값.
+        const content = document.getElementById('contentInput').value; // 내용 입력값.
+        const timestamp = new Date().toLocaleString(); // 현재 시간 문자열. 예: "2025-05-27 15:40:00".
+
+        if (!title || !author || !content)
+          // 필수 입력값 확인.
+          return alert('모든 내용을 입력해주세요.'); // 미입력 시 경고창.
+
+        posts.push({ title, author, category, content, timestamp }); // 새 게시물 객체를 배열에 추가.
+
+        // 입력창 초기화
+        document.getElementById('titleInput').value = '';
+        document.getElementById('authorInput').value = '';
+        document.getElementById('categoryInput').value = '강민수';
+        document.getElementById('contentInput').value = '';
+
+        togglePostForm(false); // 폼 닫기.
+        renderPosts(currentFilter); // 게시물 목록 갱신.
+      }
+      //사용자가 입력한 데이터 받아 posts 배열에 저장, toLocaleSTrint()은 지역화된 시간 형식 제공. push -> 배열 끝에 추가
+
+      function renderPosts(filter = null) {
+        // 게시글 목록 렌더링. filter는 선택적 카테고리.
+        const list = document.getElementById('postList'); // 목록 컨테이너 참조.
+        list.innerHTML = ''; // 기존 내용 지우기.
+        document.getElementById('postDetail').classList.add('hidden'); // 상세 페이지 숨김.
+
+        if (!formOpen) {
+          // 폼이 닫혀 있을 때만 목록 표시.
+          document.getElementById('postList').classList.remove('hidden'); // 목록 표시.
+          posts
+            .filter((p) => !filter || p.category === filter) // 카테고리 필터링.
+            .forEach((post, index) => {
+              // 각 게시물에 대해.
+              const div = document.createElement('div'); // 새 div 생성.
+              div.className = 'post'; // CSS 클래스 적용.
+              div.innerHTML = ` 
+          <div class="post-title">${post.title}</div>
+          <div class="post-author">글쓴이: ${post.author}</div>
+          <div class="post-time">작성시간: ${post.timestamp}</div>
+        `; //innerHTML->게시물 내용 렌더링
+              div.onclick = () => showDetail(index); // 클릭 시 상세 페이지 표시.
+              list.appendChild(div); // 목록에 추가.
+            });
+        } else {
+          //폼 열려있으면 목록 숨김
+          document.getElementById('postList').classList.add('hidden'); // 폼 열려 있으면 목록 숨김.
+        }
+      }
+
+      function filterCategory(category) {
+        // 카테고리 필터 설정.
+        currentFilter = category; // 현재 필터 업데이트.
+        renderPosts(category); // 필터링된 목록 렌더링.
+      }
+
+      function showDetail(index) {
+        // 게시물 상세 페이지 표시.
+        const post = posts[index]; // 선택한 게시물.
+        currentDetailIndex = index; // 현재 인덱스 저장.
+        document.getElementById('detailTitle').innerText = post.title; // 제목 표시.
+        document.getElementById('detailAuthor').innerText = post.author; // 글쓴이 표시.
+        document.getElementById('detailTime').innerText = post.timestamp; // 시간 표시.
+        document.getElementById('detailCategory').innerText = post.category; // 카테고리 표시.
+        document.getElementById('detailContent').innerText = post.content; // 내용 표시.
+
+        document.getElementById('postList').classList.add('hidden'); // 목록 숨김.
+        document.getElementById('postDetail').classList.remove('hidden'); // 상세 페이지 표시.
+      }
+
+      function deletePost() {
+        // 게시물 삭제.
+        if (currentDetailIndex !== null) {
+          // 상세 페이지가 열려 있을 때.
+          const confirmDelete = confirm('정말로 이 글을 삭제하시겠습니까?'); // 확인 다이얼로그.
+          if (confirmDelete) {
+            // 사용자가 확인 클릭 시.
+            posts.splice(currentDetailIndex, 1); // 배열에서 게시물 제거.
+            currentDetailIndex = null; // 인덱스 초기화.
+            renderPosts(currentFilter); // 목록 갱신.
+          }
+        }
+      }
+      //splice는 배열에서 특정 인덱스 요소 제거. confirm은 브라우저 기본 다이얼로그.
+
+      function goBack() {
+        // 목록으로 돌아가기.
+        renderPosts(currentFilter); // 현재 필터로 목록 렌더링.
+      }
+
+      function togglePostForm(forceState) {
+        // 폼 표시/숨김 토글.
+        const form = document.getElementById('postForm');
+        // id가 postForm인 요소(즉, 게시글 작성폼)를 가져옴.
+        // forceState가 boolean이면 그 값, 아니면 현재 상태 반전
+        const newState =
+          typeof forceState === 'boolean' ? forceState : !formOpen; // 상태 결정.
+        formOpen = newState; // 상태 업데이트.
+        form.classList.toggle('hidden', !formOpen); // hidden 클래스 토글.
+        renderPosts(currentFilter); // 목록 갱신.
+      }
+      //페이지 최초 진입 시 전체 게시글 목록 렌더링
+      renderPosts();
+    </script>
+  </body>
+</html>
